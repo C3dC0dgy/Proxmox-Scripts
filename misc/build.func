@@ -651,12 +651,21 @@ description() {
   fi
 }
 
-# Function to prompt the user for the Omada version
-prompt_omada_version() {
-  echo -e "Please enter the Omada version you want to install (e.g., 5.9.31):"
-  read -p "Version: " OMADA_VERSION
-  if [[ -z "$OMADA_VERSION" ]]; then
-    echo -e "${RD}[ERROR]${CL} No version entered. Exiting."
+# Function to construct Omada download URL
+build_omada_url() {
+  base_url="https://static.tp-link.com"
+  file_name="Omada_SDN_Controller_v${OMADA_VERSION}_Linux_x64.deb"
+  OMADA_URL="${base_url}/${file_name}"
+}
+
+# Function to download the specified Omada version
+download_omada_version() {
+  echo -e "Downloading Omada Controller version ${OMADA_VERSION}..."
+  wget -qL "$OMADA_URL"
+  if [[ $? -ne 0 ]]; then
+    msg_error "Failed to download version ${OMADA_VERSION}. Please check the version and try again."
     exit 1
   fi
+  msg_ok "Downloaded Omada Controller version ${OMADA_VERSION}."
 }
+
