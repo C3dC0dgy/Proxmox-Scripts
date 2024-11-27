@@ -54,22 +54,35 @@ function default_settings() {
 
 function update_script() {
 header_info
-if [[ ! -d /opt/tplink ]]; then msg_error "No ${APP} Installation Found!"; exit; fi
+if [[ ! -d /opt/tplink ]]; then 
+    msg_error "No ${APP} Installation Found!"; 
+    exit; 
+fi
 
-# Specify the version of Omada you want to install
-SPECIFIED_VERSION="5.9.31" # Change this to your desired version
+# Ask for manual input of the version
+echo -e "Please enter the Omada version you want to install (e.g., 5.9.31):"
+read -p "Version: " SPECIFIED_VERSION
+
+if [[ -z "${SPECIFIED_VERSION}" ]]; then
+    msg_error "You must specify a version!"
+    exit 1
+fi
+
+# Construct the download URL
 base_url="https://static.tp-link.com"
 file_name="Omada_SDN_Controller_v${SPECIFIED_VERSION}_Linux_x64.deb"
 specified_url="${base_url}/${file_name}"
 
-echo -e "Downloading Omada Controller version ${SPECIFIED_VERSION}"
+# Attempt to download the specified version
+echo -e "Downloading Omada Controller version ${SPECIFIED_VERSION}..."
 wget -qL ${specified_url}
 if [ $? -ne 0 ]; then
-  msg_error "Failed to download version ${SPECIFIED_VERSION}. Please check the version and try again."
-  exit
+    msg_error "Failed to download version ${SPECIFIED_VERSION}. Please check the version and try again."
+    exit 1
 fi
 
-echo -e "Installing Omada Controller version ${SPECIFIED_VERSION}"
+# Install the downloaded version
+echo -e "Installing Omada Controller version ${SPECIFIED_VERSION}..."
 dpkg -i ${file_name}
 rm -rf ${file_name}
 echo -e "Installed Omada Controller version ${SPECIFIED_VERSION}"
@@ -81,5 +94,5 @@ build_container
 description
 
 msg_ok "Completed Successfully!\n"
-echo -e "${APP} should be reachable by going to the following URL.
+echo -e "${APP} should be reachable by going to the following URL:
          ${BL}https://${IP}:8043${CL} \n"
