@@ -35,6 +35,7 @@ prompt_omada_version() {
   fi
 }
 
+# Update script to install specified version
 function update_script() {
   header_info
   if [[ ! -d /opt/tplink ]]; then 
@@ -42,18 +43,31 @@ function update_script() {
     exit; 
   fi
 
-  # Prompt for the version and build the URL
+  # Prompt for the version
   prompt_omada_version
-  build_omada_url
-  download_omada_version
 
-  # Install the specified version
+  # Build the download URL
+  base_url="https://static.tp-link.com"
+  file_name="Omada_SDN_Controller_v${OMADA_VERSION}_Linux_x64.deb"
+  OMADA_URL="${base_url}/${file_name}"
+
+  # Download the specified version
+  echo -e "Downloading Omada Controller version ${OMADA_VERSION}..."
+  wget -qL "$OMADA_URL"
+  if [[ $? -ne 0 ]]; then
+    msg_error "Failed to download version ${OMADA_VERSION}. Please check the version and try again."
+    exit 1
+  fi
+  msg_ok "Downloaded Omada Controller version ${OMADA_VERSION}."
+
+  # Install the downloaded version
   echo -e "Installing Omada Controller version ${OMADA_VERSION}..."
-  dpkg -i "Omada_SDN_Controller_v${OMADA_VERSION}_Linux_x64.deb"
-  rm -f "Omada_SDN_Controller_v${OMADA_VERSION}_Linux_x64.deb"
+  dpkg -i "$file_name"
+  rm -f "$file_name"
   msg_ok "Installed Omada Controller version ${OMADA_VERSION}."
 }
 
+# Main execution
 start
 build_container
 description
