@@ -214,6 +214,17 @@ advanced_settings() {
     done
   fi
 
+  # Prompt for Omada version
+  while true; do
+    OMADA_VERSION=$(whiptail --backtitle "Proxmox VE Helper Scripts" --inputbox "Enter the desired Omada Controller version (e.g., 5.9.31):" 8 58 --title "OMADA VERSION" 3>&1 1>&2 2>&3)
+    if [[ -z "$OMADA_VERSION" ]]; then
+      whiptail --backtitle "Proxmox VE Helper Scripts" --msgbox "You must enter a valid version. Please try again." 8 58
+    else
+      echo -e "${DGN}Using Omada Controller Version: ${BGN}$OMADA_VERSION${CL}"
+      break
+    fi
+  done
+
   CT_TYPE=""
   while [ -z "$CT_TYPE" ]; do
     if CT_TYPE=$(whiptail --backtitle "Proxmox VE Helper Scripts" --title "CONTAINER TYPE" --radiolist "Choose Type" 10 58 2 \
