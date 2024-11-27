@@ -55,17 +55,24 @@ function default_settings() {
 function update_script() {
 header_info
 if [[ ! -d /opt/tplink ]]; then msg_error "No ${APP} Installation Found!"; exit; fi
-latest_url=$(curl -fsSL "https://www.tp-link.com/en/support/download/omada-software-controller/" | grep -o 'https://.*x64.deb' | head -n1)
-latest_version=$(basename "${latest_url}")
-if [ -z "${latest_version}" ]; then
-  msg_error "It seems that the server (tp-link.com) might be down. Please try again at a later time."
+
+# Specify the version of Omada you want to install
+SPECIFIED_VERSION="5.9.31" # Change this to your desired version
+base_url="https://static.tp-link.com"
+file_name="Omada_SDN_Controller_v${SPECIFIED_VERSION}_Linux_x64.deb"
+specified_url="${base_url}/${file_name}"
+
+echo -e "Downloading Omada Controller version ${SPECIFIED_VERSION}"
+wget -qL ${specified_url}
+if [ $? -ne 0 ]; then
+  msg_error "Failed to download version ${SPECIFIED_VERSION}. Please check the version and try again."
   exit
 fi
-echo -e "Updating Omada Controller"
-wget -qL ${latest_url}
-dpkg -i ${latest_version}
-rm -rf ${latest_version}
-echo -e "Updated Omada Controller"
+
+echo -e "Installing Omada Controller version ${SPECIFIED_VERSION}"
+dpkg -i ${file_name}
+rm -rf ${file_name}
+echo -e "Installed Omada Controller version ${SPECIFIED_VERSION}"
 exit
 }
 
