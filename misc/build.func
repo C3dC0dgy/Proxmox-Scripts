@@ -650,3 +650,13 @@ description() {
     systemctl start ping-instances.service
   fi
 }
+
+# Function to prompt the user for the Omada version
+prompt_omada_version() {
+  echo -e "Please enter the Omada version you want to install (e.g., 5.9.31):"
+  read -p "Version: " OMADA_VERSION
+  if [[ -z "$OMADA_VERSION" ]]; then
+    echo -e "${RD}[ERROR]${CL} No version entered. Exiting."
+    exit 1
+  fi
+}
